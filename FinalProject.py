@@ -100,7 +100,7 @@ def vecSubtract(vector03,vector04):
     else:
       return None
       print("Invalid Input")
-      
+
 def GS(A):
   "This fuction is to take the Modified Gram-Schmidt of a Matrix. This takes the QR Factorization of the matrix. We use all of the fuction that we used for previous quizzes. This is to help us take the Norm of the vectors. We use the two norm to normalize the vector. Then we take the dot product of the normalized vector and the second vector. Then scalar vector multiplication of the dot product and the normalized vector and gave the variable a name. Then we subtract the second vector minus the variable that we assigned a name too. We get our factorization "
   # This for loop will check each element of the vector to see if it's a number. 
@@ -126,53 +126,49 @@ def GS(A):
         #This line takes the Subtraction of the second vector in the matrix minus the temp variable that we assigned
         V[j] = vecSubtract(V[j],temp)
     return [Q,R]  
-  
-QR = GrSc(A) #defines QR for the independent Q and R.
+#defines QR for the independent Q and R.  
+QR = GS(A) 
 
-Q = QR[0] #defines Q
-R = QR[1] #defines R
+Q = QR[0] 
+R = QR[1] 
 
-'''
-def trans(Q):
-  m = len(Q)
-  n = len(Q[0])
-  new = [[0] * m for i in range(n)]
-  for i in range(len(Q)):
-    for j in range(len(Q[0])):
-      new[j][i] = Q[i][j]
-  return new
-QT = trans(Q)
-'''
 #transmatvecMulti multiplies the matrix Q and vector y together.
 def transmatvecMulti(Q, y):
   '''
-  This function takes the matrix Q and the vector y as its arguments and multiplies them together. We wanted the transform of Q, but I used the function for matrix vector multiplication that uses a matrix made of rows, instead of columns. So Q could be used, since it is made of column vectors.
+  This fuction is used to take the transpose of Q and multiplies by vector y. This is for the purpose of us using the result to later use it in the backsub
   '''
-  new = [] #used for the answer.
-  for i in range(len(Q)):
-    product = 0 #since we want no addition this appears after the for statement.
-    for j in range(len(y)):
-      product += Q[i][j] * y[j]
-    new.append(product) #appends product inside the new brackets.
-  return new
-b = transmatvecMulti(Q, y) #defining b
-#backsub is finding the unknown starting with the end.
+  y = [] 
 
-def backsub(R, b):
+  for i in range(len(Q)):
+    x = 0 
+    for j in range(len(y)):
+      #This adds the numbers after multiplication of the elements times the second vector to 0
+      x += Q[i][j] * y[j]
+    #appends product inside the new brackets.
+    y.append(x) 
+  return x
+
+b = transmatvecMulti(Q, y) 
+#backsub is finding the unknown starting with the end.
+def Backsub(R, b):
   '''
-  this function takes the the vector R and the vector b and returns the unknowns c. Being called backwards substitution, it starts with the last unknown, solves it, and then uses it to solve for the next unknown.
+  This fuction is for the purpose of finding our c which are the coefficients of the fuction. It is easier for us to start from the bottom because it is a triangular matrix and solves the variables faster.
   '''
-  a = len(b) - 1
+  #This is taking the len of b and subtracting one
+  r = len(b) - 1
+  #This is creating a matrix of zeros with the correct dimensions
   c = [0] * len(b)
-  c[a] = b[a] / R[a][a]
-  for i in range(a, 0, -1):
+  c[r] = b[r] / R[r][r]
+  #This is the action of starting from the bottom of the matrix
+  for i in reversed(range(len(b))):
     c[i] = b[i]
-    for j in range(i +1, a):
+    #This is to start the elements from  i+1 to len(b) 
+    for j in range(i +1, len(b)):
+      #This line substracts the useless elements from the vector
       c[i] = c[i] - c[j]*R[j][i]
       c[i] = c[i] / R[i][i]
   return c
-print(A)
-print(GrSc(A))
-print(backsub(R, b))
 
-  
+print(A)
+print(GS(A))
+print(Backsub(R, b))
